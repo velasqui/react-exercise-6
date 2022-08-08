@@ -1,24 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState, useEffect } from 'react';
+import { fetchAllQuotes } from './services/quotes.services';
+import { fetchAllPeriods } from './services/periods.services';
+import { Quote, Periods } from './types';
 import './App.css';
 
 function App() {
+  const [quotes, setQuotes] = useState<Quote[]>([])
+  const [quote, setQuote] = useState<Quote>();
+  const [periods, setPeriods] = useState<Periods[]>([])
+  const [period, setPeriod] = useState<Periods>()
+
+  useEffect(() => {
+    getAllQuotes();
+  }, []);
+
+  useEffect(() => {
+    getAllPeriods();
+  }, []);
+  
+  function getAllQuotes() {
+    fetchAllQuotes().then(response => setQuotes(response.data));
+  };
+
+  function getAllPeriods() {
+    fetchAllPeriods().then(periods => setPeriods(periods));
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Weather Forecast</h1>
+
+      <div className='periods'>
+        <ul>
+          {periods.map(period => (
+            <li>
+              <h2>{ period.name }</h2>
+              <p>{ period.temperature }</p>
+              <img src={`${period.icon}`} alt=''></img>
+              <p>{ period.detailedForecast }</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className='quotes'>
+        <ul>
+          {quotes.map(quote => (
+            <li>
+              <p>Author: {quote.author}</p>
+              <p>Text: {quote.text}</p>
+            </li>
+          ))}
+        </ul>        
+      </div>
     </div>
   );
 }
